@@ -13,12 +13,29 @@ import networkx as nx
 
 
 
-st.title('Analysis on covid-19 related publications in 2020')
+st.title('Bibliographic analysis on covid-19 related publications in 2020')
+st.write('All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
+
+st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications are published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
+st.write('1. What are the most popular research areas? What does the quantitative output look like?')
+st.write('2. What are the most cited papers?')
+st.write('3. Which author has the most significant impact?')
+st.write('4. In the co-authorship network, what is the collaboration pattern?')
+st.write('5. How does the ratio of multidisciplinary paper change over time? Is there any relation to the collaboration pattern?')
+st.write('6. What are the keywords that describe the topics for each period? Is there any trend?')
+st.write('...')
+
+st.write('At the beginning, a few descriptive visualizations will be shown, then there will be word clouds visualizations, lastly, analysis of 3 major networks from the data will be shown')
+st.subheader('Descriptive data analysis')
+
+
+
+
+
+
 
 
 data = pd.read_excel('/Users/xuezhou/Dropbox/data.xlsx', usecols=range(1,30))
-
-
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
 data_w_date = data[data.PD.isin(mon)].copy()
@@ -343,3 +360,31 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     plt.legend()
     plt.tight_layout()
     st.pyplot(fig13)
+
+
+
+
+#h g
+def h_index(li):
+    li_sorted=sorted(li, reverse=True)
+    for i in li_sorted:
+        if i < li_sorted.index(i)+1:
+            break
+    return li_sorted.index(i)
+
+def g_index(li):
+    li_sorted=sorted(li, reverse=True)
+    for i in li_sorted:
+        if sum(li_sorted[:li_sorted.index(i)+1])<(li_sorted.index(i)+1)**2:
+            break
+    return li_sorted.index(i)+1
+data_author_index = data[['AF', 'Z9']].dropna()
+data_author_index['Authors'] = data_author_index['AF'].str.split(';')
+data_author_index_sep = data_author_index.explode('Authors').reset_index().drop(columns=['index','AF'])
+data_author_index_sep=data_author_index_sep[['Authors','Z9' ]]
+data_h=data_author_index_sep.groupby('Authors').agg(lambda x: list(x)).reset_index()
+data_h['h_index']= data_h['Z9'].apply(h_index)
+h_index_top10 = data_h.sort_values('h_index',ascending=False).drop(columns='Z9').reset_index(drop=True).head(20)
+data_h['g_index']= data_h['Z9'].apply(g_index)
+g_index_top10 = data_h.sort_values(['h_index','g_index'],ascending=False).drop(columns='Z9').reset_index(drop=True).head(20)
+st.dataframe(g_index_top10)
