@@ -14,24 +14,19 @@ import networkx as nx
 
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020')
-st.write('All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
-
-st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications are published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
+st.subheader('Introduction')
+st.write('The main purpose of this analysis is to identify the research trend, collaboration pattern, most influential elements, etc. from publications related to covid-19 in 2020. All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
+st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications have been published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
 st.write('1. What are the most popular research areas? What does the quantitative output look like?')
-st.write('2. What are the most cited papers?')
+st.write('2. What are the most cited papers? And what are the corresponding research areas?')
 st.write('3. Which author has the most significant impact?')
-st.write('4. In the co-authorship network, what is the collaboration pattern?')
+st.write('4. In the co-authorship network, what are the author pairs that collaborate most frequently?')
 st.write('5. How does the ratio of multidisciplinary paper change over time? Is there any relation to the collaboration pattern?')
-st.write('6. What are the keywords that describe the topics for each period? Is there any trend?')
+st.write('6. What are the keywords that describe the topics for each period? Is there any switch of research focus?')
 st.write('...')
 
-st.write('At the beginning, a few descriptive visualizations will be shown, then there will be word clouds visualizations, lastly, analysis of 3 major networks from the data will be shown')
+st.write('At the beginning, a few descriptive visualizations will be shown, then there will be word clouds visualizations, lastly, analysis of 3 major networks from the data will be shown.')
 st.subheader('Descriptive data analysis')
-
-
-
-
-
 
 
 
@@ -56,7 +51,7 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
 
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
 fig2, ax2 = plt.subplots(figsize=(12,6))
-ax2.bar(data_lang.Language, data_lang.Count, color='slategrey')
+ax2.bar(data_lang.Language, data_lang.Count, color='thistle')
 for p in ax2.patches:
          ax2.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
          ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
@@ -73,7 +68,7 @@ st.pyplot(fig2)
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
 
 fig3, ax3 = plt.subplots(figsize=(12,7.5))
-ax3.bar(data_source.Title, data_source.Count, color='slategrey')
+ax3.bar(data_source.Title, data_source.Count, color='thistle')
 plt.xlabel('Source',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
@@ -89,7 +84,7 @@ st.pyplot(fig3)
 data_page = data.PG.dropna()
 
 fig4, ax4 = plt.subplots(figsize=(12,5.7))
-ax4.hist(data_page, color='slategrey', bins=120)
+ax4.hist(data_page, color='thistle', bins=120)
 plt.xlabel('Number of Pages',fontsize=15)
 plt.ylabel('Frequency',fontsize=15)
 plt.xticks(fontsize=15)
@@ -105,14 +100,14 @@ data_inst_all = data_inst.explode('C1').C1.value_counts().rename_axis('Instituti
 
 
 fig5, ax5 = plt.subplots(figsize=(16,9))
-ax5.bar(data_inst_all.Institutions, data_inst_all.Count, color='slategrey')
+ax5.bar(data_inst_all.Institutions, data_inst_all.Count, color='thistle')
 plt.xlabel('Institutions',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
 plt.yticks(fontsize=15)
 for p in ax5.patches:
              ax5.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='thistle',xytext=(0, 5), textcoords='offset points')
 
 plt.title('Number of Publications by Institution', fontsize=19)
 plt.tight_layout()
@@ -150,7 +145,7 @@ data_country_10 = data_country_all[0:10]
 
 
 fig6, ax6 = plt.subplots(figsize=(15,8))
-ax6.bar(data_country_10.Countries, data_country_10.Count, color='slategrey')
+ax6.bar(data_country_10.Countries, data_country_10.Count, color='thistle')
 plt.xlabel('Countries',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15, rotation = -45)
@@ -169,7 +164,7 @@ data_research.SC = data_research.SC.str.split('; ')
 data_research_all = data_research.explode('SC').SC.value_counts().rename_axis('ResArea').reset_index(name='Count')[:10]
 
 fig7, ax7 = plt.subplots(figsize=(17,10))
-ax7.bar(data_research_all.ResArea, data_research_all.Count, color='slategrey')
+ax7.bar(data_research_all.ResArea, data_research_all.Count, color='thistle')
 plt.xlabel('Research Area',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
@@ -212,6 +207,7 @@ st.dataframe(atb)
 
 #most cited ppr
 mcp = data[['TI', 'SC', 'Z9']].dropna().sort_values('Z9', ascending=False).reset_index(drop=True)
+mcp = mcp.rename(columns={'TI':'Document title','SC': 'Research area', 'Z9': 'Total number cited'})
 st.dataframe(mcp)
 
 #num author/ppr
@@ -220,7 +216,7 @@ author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
 author_per_ppr_df = author_per_ppr.value_counts().rename_axis('Number of Authors').reset_index(name='Count').sort_values('Number of Authors')
 
 fig8, ax8 = plt.subplots(figsize=(12,6))
-ax8.bar(author_per_ppr_df['Number of Authors'],author_per_ppr_df['Count'], color='slategrey')
+ax8.bar(author_per_ppr_df['Number of Authors'],author_per_ppr_df['Count'], color='thistle')
 plt.xlabel('Number of Authors',fontsize=15)
 plt.ylabel('Frequency',fontsize=15)
 plt.xticks(fontsize=15)
@@ -232,10 +228,41 @@ st.pyplot(fig8)
 
 
 
+
+#int colab+mulridis
+int_colab = data_w_date[['PD','C1']].dropna()
+int_colab['C1'] = int_colab['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
+int_colab['country_whole']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in int_colab['C1']]]
+int_colab['replace'] = [[replace(i) for i in j] for j in int_colab['country_whole']]
+int_colab['replace'] = [list(set(i)) for i in int_colab['replace']]
+int_colab['num_country'] = int_colab['replace'].apply(lambda x: len(x))
+int_colab.loc[int_colab['num_country']>1, 'num_country'] = 2
+int_colab_counts = int_colab.groupby('PD')['num_country'].value_counts().rename_axis(['date','collab']).reset_index(name='Count').pivot(index='date', columns='collab', values='Count').fillna(0).reset_index()
+int_colab_counts['percentage_inter_colab']=int_colab_counts[2]/(int_colab_counts[1]+int_colab_counts[2])
+
+ra_sm = data_w_date[['PD','SC']].dropna()
+ra_sm['SC'] = ra_sm['SC'].str.split(';')
+ra_sm['cnt'] = ra_sm['SC'].apply(lambda x: len(x))
+
+ra_sm.loc[ra_sm['cnt']>1, 'cnt'] = 2
+ra_sm_counts = ra_sm.groupby('PD')['cnt'].value_counts().rename_axis(['date','ra']).reset_index(name='Count').pivot(index='date', columns='ra', values='Count').fillna(0).reset_index()
+ra_sm_counts['percentage_multi_disp']=ra_sm_counts[2]/(ra_sm_counts[1]+ra_sm_counts[2])
+with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
+    fig13, ax13 = plt.subplots(figsize=(12,6))
+    ax13.plot(int_colab_counts['date'], int_colab_counts['percentage_inter_colab'], label='International collab', color='springgreen')
+    ax13.plot(ra_sm_counts['date'], ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', color='salmon')
+    plt.xlabel('Date',fontsize=15)
+    plt.ylabel('Ratio',fontsize=15)
+    plt.xticks(fontsize=15)
+    plt.yticks(fontsize=15)
+    plt.legend()
+    plt.tight_layout()
+    st.pyplot(fig13)
+
 #by month
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
 fig9, ax9 = plt.subplots(figsize=(12,6))
-ax9.plot(date_count.Date, date_count.Count,color='slategrey', marker='o')
+ax9.plot(date_count.Date, date_count.Count,color='darksalmon', marker='o')
 plt.xlabel('Date',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15)
@@ -299,6 +326,11 @@ plt.yticks(fontsize=15)
 plt.title('Top 10 Research Areas over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig12)
+
+
+
+
+st.subheader('Correlation matrix')
 #corr
 corr_ana = data[['AF', 'NR', 'Z9', 'PG', 'SC', 'C1']].dropna()
 corr_ana['Number of Authors']=corr_ana['AF'].str.split(';').apply(lambda x: len(x))
@@ -331,39 +363,7 @@ g.set_xticklabels(labels, rotation=90, size='medium')
 st.pyplot(f)
 
 
-#int colab+mulridis
-int_colab = data_w_date[['PD','C1']].dropna()
-int_colab['C1'] = int_colab['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
-int_colab['country_whole']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in int_colab['C1']]]
-int_colab['replace'] = [[replace(i) for i in j] for j in int_colab['country_whole']]
-int_colab['replace'] = [list(set(i)) for i in int_colab['replace']]
-int_colab['num_country'] = int_colab['replace'].apply(lambda x: len(x))
-int_colab.loc[int_colab['num_country']>1, 'num_country'] = 2
-int_colab_counts = int_colab.groupby('PD')['num_country'].value_counts().rename_axis(['date','collab']).reset_index(name='Count').pivot(index='date', columns='collab', values='Count').fillna(0).reset_index()
-int_colab_counts['percentage_inter_colab']=int_colab_counts[2]/(int_colab_counts[1]+int_colab_counts[2])
-
-ra_sm = data_w_date[['PD','SC']].dropna()
-ra_sm['SC'] = ra_sm['SC'].str.split(';')
-ra_sm['cnt'] = ra_sm['SC'].apply(lambda x: len(x))
-
-ra_sm.loc[ra_sm['cnt']>1, 'cnt'] = 2
-ra_sm_counts = ra_sm.groupby('PD')['cnt'].value_counts().rename_axis(['date','ra']).reset_index(name='Count').pivot(index='date', columns='ra', values='Count').fillna(0).reset_index()
-ra_sm_counts['percentage_multi_disp']=ra_sm_counts[2]/(ra_sm_counts[1]+ra_sm_counts[2])
-with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
-    fig13, ax13 = plt.subplots(figsize=(12,6))
-    ax13.plot(int_colab_counts['date'], int_colab_counts['percentage_inter_colab'], label='International collab')
-    ax13.plot(ra_sm_counts['date'], ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary')
-    plt.xlabel('Date',fontsize=15)
-    plt.ylabel('Ratio',fontsize=15)
-    plt.xticks(fontsize=15)
-    plt.yticks(fontsize=15)
-    plt.legend()
-    plt.tight_layout()
-    st.pyplot(fig13)
-
-
-
-
+st.write('h-index and g-index are author-level metrics to measure both the productivity and citation impact of publications of an author. The higher the number, the greater the impact.')
 #h g
 def h_index(li):
     li_sorted=sorted(li, reverse=True)
