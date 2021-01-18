@@ -1,3 +1,2 @@
 # bibliographic_analysis_cov19_2020
-
-$streamlit run https://raw.githubusercontent.com/schneeboat/ana_2020/main/streamlit_cov.py
+A web app showing bibliographic analysis result of publications related to covid-19 in 2020
