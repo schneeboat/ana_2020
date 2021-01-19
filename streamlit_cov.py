@@ -30,7 +30,7 @@ st.write('At the beginning, a few descriptive visualizations will be shown, then
 st.subheader('Descriptive data analysis')
 
 
-url= 'https://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
+url= 'https://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xls'
 data = pd.read_excel(url, usecols=range(1,30))
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
