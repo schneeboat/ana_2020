@@ -10,10 +10,11 @@ import re
 from datetime import datetime
 import nltk
 import networkx as nx
+import base64
+import requests
 
 
-
-st.title('Bibliographic analysis on covid-19 related publications in 2020')
+st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
 st.subheader('Introduction')
 st.write('The main purpose of this analysis is to identify the research trend, collaboration pattern, most influential elements, etc. from publications related to covid-19 in 2020. All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
 st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications have been published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
@@ -29,8 +30,8 @@ st.write('At the beginning, a few descriptive visualizations will be shown, then
 st.subheader('Descriptive data analysis')
 
 
-
-data = pd.read_excel('/Users/xuezhou/Dropbox/data.xlsx', usecols=range(1,30))
+url= 'https://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
+data = pd.read_excel(url, usecols=range(1,30))
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
 data_w_date = data[data.PD.isin(mon)].copy()
