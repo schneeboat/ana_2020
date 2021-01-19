@@ -12,7 +12,7 @@ import nltk
 import networkx as nx
 import base64
 import requests
-
+import xlrd
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
 st.subheader('Introduction')
