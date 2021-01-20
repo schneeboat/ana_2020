@@ -55,6 +55,7 @@ st.write('')
 #language
 
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
+
 fig2, ax2 = plt.subplots(figsize=(12,6))
 ax2.bar(data_lang.Language, data_lang.Count, color='thistle')
 for p in ax2.patches:
@@ -71,7 +72,7 @@ st.write('')
 
 #source
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
-
+data_source['Title'] = data_source.Title.astype('category')
 fig3, ax3 = plt.subplots(figsize=(12,7.5))
 ax3.bar(data_source.Title, data_source.Count, color='thistle')
 plt.xlabel('Source',fontsize=15)
@@ -86,7 +87,7 @@ plt.tight_layout()
 st.pyplot(fig3)
 st.write('')
 #pagecount
-data_page = data.PG.dropna()
+data_page = data.PG.dropna().copy()
 
 fig4, ax4 = plt.subplots(figsize=(12,5.7))
 ax4.hist(data_page, color='thistle', bins=120)
@@ -99,7 +100,7 @@ plt.tight_layout()
 st.pyplot(fig4)
 st.write('')
 #institution
-data_inst = data[['C1']].dropna()
+data_inst = data[['C1']].dropna().copy()
 data_inst.C1= data_inst.C1.apply(lambda x: re.findall(r"\] (.*?)\,", x))
 data_inst_all = data_inst.explode('C1').C1.value_counts().rename_axis('Institutions').reset_index(name='Count')[0:10]
 
@@ -119,7 +120,7 @@ plt.tight_layout()
 st.pyplot(fig5)
 st.write('')
 #country
-data_country = data[['C1']].dropna()
+data_country = data[['C1']].dropna().copy()
 data_country.C1 = data_country.C1.apply(lambda x: re.sub(r"\[(.*?)\] ", "", x).split('; ')).to_list()
 
 data_country['country']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in data_country.C1]] 
@@ -164,7 +165,7 @@ plt.tight_layout()
 st.pyplot(fig6)
 st.write('')
 #ra
-data_research = data[['SC']].dropna()
+data_research = data[['SC']].dropna().copy()
 data_research.SC = data_research.SC.str.split('; ')
 data_research_all = data_research.explode('SC').SC.value_counts().rename_axis('ResArea').reset_index(name='Count')[:10]
 
@@ -183,18 +184,18 @@ plt.tight_layout()
 st.pyplot(fig7)
 st.write('')
 #kw
-data_keywords=data[['DE']].dropna()
+data_keywords=data[['DE']].dropna().copy()
 data_keywords.DE = data_keywords.DE.str.split('; ')
 data_keywords_full = data_keywords.explode('DE').DE.str.lower().value_counts().rename_axis('Author Keywords').reset_index(name='Count')
 st.dataframe(data_keywords_full.head(10))
 st.write('')
 #author tb
-data_author = data[['AF']].dropna()
-data_author = data_author.loc[data_author.AF != '[Anonymous]']
+data_author = data[['AF']].dropna().copy()
+data_author = data_author.loc[data_author.AF != '[Anonymous]'].copy()
 data_author.AF = data_author.AF.str.split('; ')
 data_author_all = data_author.explode('AF').AF.value_counts().rename_axis('AF').reset_index(name='Number of papers')
 author_cited = data[['AF','Z9','SC']].dropna()
-author_cited = author_cited.loc[author_cited.AF != '[Anonymous]']
+author_cited = author_cited.loc[author_cited.AF != '[Anonymous]'].copy()
 author_cited.AF = author_cited.AF.str.split(';')
 author_cited_all = author_cited.explode('AF').sort_values('Z9', ascending=False).drop(columns = 'SC').reset_index().drop(columns = 'index')
 author_cited_all = author_cited_all[['AF', 'Z9']]
@@ -212,12 +213,12 @@ st.write('')
 
 
 #most cited ppr
-mcp = data[['TI', 'SC', 'Z9']].dropna().sort_values('Z9', ascending=False).reset_index(drop=True)
+mcp = data[['TI', 'SC', 'Z9']].dropna().copy().sort_values('Z9', ascending=False).reset_index(drop=True)
 mcp = mcp.rename(columns={'TI':'Document title','SC': 'Research area', 'Z9': 'Total number cited'})
 st.dataframe(mcp.head(10))
 st.write('')
 #num author/ppr
-data_author_wo_anony = data_author.loc[data_author.AF != '[Anonymous]']
+data_author_wo_anony = data_author.loc[data_author.AF != '[Anonymous]'].copy()
 author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
 author_per_ppr_df = author_per_ppr.value_counts().rename_axis('Number of Authors').reset_index(name='Count').sort_values('Number of Authors')
 
@@ -236,7 +237,7 @@ st.write('')
 
 
 #int colab+mulridis
-int_colab = data_w_date[['PD','C1']].dropna()
+int_colab = data_w_date[['PD','C1']].dropna().copy()
 int_colab['C1'] = int_colab['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
 int_colab['country_whole']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in int_colab['C1']]]
 int_colab['replace'] = [[replace(i) for i in j] for j in int_colab['country_whole']]
@@ -246,7 +247,7 @@ int_colab.loc[int_colab['num_country']>1, 'num_country'] = 2
 int_colab_counts = int_colab.groupby('PD')['num_country'].value_counts().rename_axis(['date','collab']).reset_index(name='Count').pivot(index='date', columns='collab', values='Count').fillna(0).reset_index()
 int_colab_counts['percentage_inter_colab']=int_colab_counts[2]/(int_colab_counts[1]+int_colab_counts[2])
 
-ra_sm = data_w_date[['PD','SC']].dropna()
+ra_sm = data_w_date[['PD','SC']].dropna().copy()
 ra_sm['SC'] = ra_sm['SC'].str.split(';')
 ra_sm['cnt'] = ra_sm['SC'].apply(lambda x: len(x))
 
@@ -278,7 +279,7 @@ plt.tight_layout()
 st.pyplot(fig9)
 
 #country/month
-country_month = data_w_date[['C1', 'PD']].dropna()
+country_month = data_w_date[['C1', 'PD']].dropna().copy()
 country_month.C1 = country_month.C1.apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
 country_month['country']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in country_month.C1]]     
 country_month['replace'] = [[replace(i) for i in j] for j in country_month['country']]
@@ -286,10 +287,10 @@ country_month['replace'] = [list(set(i)) for i in country_month['replace']]
 country_month_all = country_month.explode('replace').drop(columns=['C1','country'])
 country_month_all['num']=1
 country_month_10 = country_month_all[country_month_all['replace'].isin(data_country_10['Countries'].to_list())].groupby(['PD','replace']).count().reset_index()
-
+country_month_10['replace'] = country_month_10['replace'].astype('category')
 fig10, ax10 = plt.subplots(figsize=(12,6))
 country_month_10.groupby('replace').plot(x='PD', y='num', ax=ax10)
-ax10.legend(data_country_10.Countries.to_list())
+ax10.legend(data_country_10.Countries.astype('category').to_list())
 plt.xlabel('Date',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15)
@@ -299,10 +300,10 @@ plt.tight_layout()
 st.pyplot(fig10)
 st.write('')
 #source/mon
-pub_month = data_w_date[['JI', 'PD']].dropna()
+pub_month = data_w_date[['JI', 'PD']].dropna().copy()
 pub_month['Number']=1
 pub_month_count_10 = pub_month[pub_month['JI'].isin(data_source['Title'].to_list())].groupby(['PD','JI']).count().reset_index()
-
+pub_month['JI'] = pub_month['JI'].astype('category')
 fig11, ax11 = plt.subplots(figsize=(12,6))
 pub_month_count_10.groupby('JI').plot(x='PD',y='Number', ax=ax11)
 ax11.legend(pub_month_count_10['JI'])
@@ -316,12 +317,12 @@ plt.tight_layout()
 st.pyplot(fig11)
 st.write('')
 #ra/mon
-research_month = data_w_date[['SC','PD']].dropna()
+research_month = data_w_date[['SC','PD']].dropna().copy()
 research_month['SC'] = research_month['SC'].str.split('; ')
 research_month_all = research_month.explode('SC')
 research_month_all['num']=1
 research_month_10 = research_month_all[research_month_all.SC.isin(data_research_all['ResArea'].to_list())].groupby(['PD','SC']).count().reset_index()
-
+research_month_10['SC'] = research_month_10['SC'].astype('category')
 fig12, ax12 = plt.subplots(figsize=(12,6))
 research_month_10.groupby('SC').plot(x='PD', y='num', ax=ax12)
 ax12.legend(data_research_all['ResArea'].to_list())
@@ -338,7 +339,7 @@ st.write('')
 
 st.subheader('Correlation matrix')
 #corr
-corr_ana = data[['AF', 'NR', 'Z9', 'PG', 'SC', 'C1']].dropna()
+corr_ana = data[['AF', 'NR', 'Z9', 'PG', 'SC', 'C1']].dropna().copy()
 corr_ana['Number of Authors']=corr_ana['AF'].str.split(';').apply(lambda x: len(x))
 corr_ana['Number of Research Areas']=corr_ana['SC'].str.split(';').apply(lambda x: len(x))
 corr_ana['addresses'] = corr_ana['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
@@ -384,7 +385,7 @@ def g_index(li):
         if sum(li_sorted[:li_sorted.index(i)+1])<(li_sorted.index(i)+1)**2:
             break
     return li_sorted.index(i)+1
-data_author_index = data[['AF', 'Z9']].dropna()
+data_author_index = data[['AF', 'Z9']].dropna().copy()
 data_author_index['Authors'] = data_author_index['AF'].str.split(';')
 data_author_index_sep = data_author_index.explode('Authors').reset_index().drop(columns=['index','AF'])
 data_author_index_sep=data_author_index_sep[['Authors','Z9' ]]
