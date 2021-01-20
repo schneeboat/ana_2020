@@ -15,6 +15,9 @@ import requests
 import xlrd
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
+st.write('For full analysis, refer to my repo https://github.com/schneeboat/ana_2020')
+st.write('Since python library wordcloud has some build error for macOS which hasn\'t been resolved for so long, pictures of generated wordcloud from colab will be pasted.')
+st.write('Given the long running time for building networks and calculating centrality measures, only calculated results will be pasted from colab.')
 st.subheader('Introduction')
 st.write('The main purpose of this analysis is to identify the research trend, collaboration pattern, most influential elements, etc. from publications related to covid-19 in 2020. All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
 st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications have been published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
@@ -26,7 +29,7 @@ st.write('5. How does the ratio of multidisciplinary paper change over time? Is 
 st.write('6. What are the keywords that describe the topics for each period? Is there any switch of research focus?')
 st.write('...')
 
-st.write('At the beginning, a few descriptive visualizations will be shown, then there will be word clouds visualizations, lastly, analysis of 3 major networks from the data will be shown.')
+st.write('At the beginning, a few descriptive visualizations will be shown, then there will be wordcloud visualizations, lastly, analysis of 4 major networks from the data will be shown.')
 st.subheader('Descriptive data analysis')
 
 
@@ -48,6 +51,7 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     ax1.set_title('Document Type Overview', fontsize=10, loc='left')
     plt.tight_layout()
     st.pyplot(fig1)
+st.write('')
 #language
 
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
@@ -63,7 +67,7 @@ plt.yticks(fontsize=15)
 plt.title('Number of Publications by Language', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig2)
-
+st.write('')
 
 #source
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
@@ -80,7 +84,7 @@ for p in ax3.patches:
 plt.title('Number of Publications by Source', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig3)
-
+st.write('')
 #pagecount
 data_page = data.PG.dropna()
 
@@ -93,7 +97,7 @@ plt.yticks(fontsize=15)
 plt.title('Number of Pages per Publication', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig4)
-
+st.write('')
 #institution
 data_inst = data[['C1']].dropna()
 data_inst.C1= data_inst.C1.apply(lambda x: re.findall(r"\] (.*?)\,", x))
@@ -113,7 +117,7 @@ for p in ax5.patches:
 plt.title('Number of Publications by Institution', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig5)
-
+st.write('')
 #country
 data_country = data[['C1']].dropna()
 data_country.C1 = data_country.C1.apply(lambda x: re.sub(r"\[(.*?)\] ", "", x).split('; ')).to_list()
@@ -158,7 +162,7 @@ for p in ax6.patches:
 plt.title('Number of Publications by Countries', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig6)
-
+st.write('')
 #ra
 data_research = data[['SC']].dropna()
 data_research.SC = data_research.SC.str.split('; ')
@@ -177,12 +181,13 @@ for p in ax7.patches:
 plt.title('Number of Publications by Research Area', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig7)
+st.write('')
 #kw
 data_keywords=data[['DE']].dropna()
 data_keywords.DE = data_keywords.DE.str.split('; ')
 data_keywords_full = data_keywords.explode('DE').DE.str.lower().value_counts().rename_axis('Author Keywords').reset_index(name='Count')
-st.dataframe(data_keywords_full)
-
+st.dataframe(data_keywords_full.head(10))
+st.write('')
 #author tb
 data_author = data[['AF']].dropna()
 data_author = data_author.loc[data_author.AF != '[Anonymous]']
@@ -202,15 +207,15 @@ author_tb = pd.merge(data_author_all, au_ci, on='AF', how='inner').dropna()
 author_tb['Cited per paper'] = author_tb.Z9/author_tb['Number of papers']
 author_tb = author_tb[['AF', 'Z9', 'Cited per paper', 'Number of papers']].rename(columns={'AF':'Author'})
 atb = author_tb.sort_values(by=['Z9', 'Cited per paper', 'Number of papers'], ascending=False).reset_index(drop=True).rename(columns={"Z9": "Total number cited"})
-st.dataframe(atb)
-
+st.dataframe(atb.head(10))
+st.write('')
 
 
 #most cited ppr
 mcp = data[['TI', 'SC', 'Z9']].dropna().sort_values('Z9', ascending=False).reset_index(drop=True)
 mcp = mcp.rename(columns={'TI':'Document title','SC': 'Research area', 'Z9': 'Total number cited'})
-st.dataframe(mcp)
-
+st.dataframe(mcp.head(10))
+st.write('')
 #num author/ppr
 data_author_wo_anony = data_author.loc[data_author.AF != '[Anonymous]']
 author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
@@ -225,7 +230,7 @@ plt.yticks(fontsize=15)
 plt.title('Number of Authors per Publication', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig8)
-
+st.write('')
 
 
 
@@ -259,7 +264,7 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     plt.legend()
     plt.tight_layout()
     st.pyplot(fig13)
-
+st.write('')
 #by month
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
 fig9, ax9 = plt.subplots(figsize=(12,6))
@@ -292,7 +297,7 @@ plt.yticks(fontsize=15)
 plt.title('Top 10 Countries over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig10)
-
+st.write('')
 #source/mon
 pub_month = data_w_date[['JI', 'PD']].dropna()
 pub_month['Number']=1
@@ -309,7 +314,7 @@ plt.yticks(fontsize=15)
 plt.title('Top 10 Publishers over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig11)
-
+st.write('')
 #ra/mon
 research_month = data_w_date[['SC','PD']].dropna()
 research_month['SC'] = research_month['SC'].str.split('; ')
@@ -327,7 +332,7 @@ plt.yticks(fontsize=15)
 plt.title('Top 10 Research Areas over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig12)
-
+st.write('')
 
 
 
@@ -362,7 +367,7 @@ g.set_yticklabels(labels, rotation=0, size='medium')
 locs, labels = plt.xticks();
 g.set_xticklabels(labels, rotation=90, size='medium')
 st.pyplot(f)
-
+st.write('')
 
 st.write('h-index and g-index are author-level metrics to measure both the productivity and citation impact of publications of an author. The higher the number, the greater the impact.')
 #h g
@@ -388,4 +393,24 @@ data_h['h_index']= data_h['Z9'].apply(h_index)
 h_index_top10 = data_h.sort_values('h_index',ascending=False).drop(columns='Z9').reset_index(drop=True).head(20)
 data_h['g_index']= data_h['Z9'].apply(g_index)
 g_index_top10 = data_h.sort_values(['h_index','g_index'],ascending=False).drop(columns='Z9').reset_index(drop=True).head(20)
-st.dataframe(g_index_top10)
+st.dataframe(g_index_top10.head(10))
+st.write('')
+
+st.subheader('Wordcloud visualization')
+st.subheader('Co-authorship network analysis')
+st.subheader('Institution-level collaboration network analysis')
+st.subheader('Country-level collaboration network analyis')
+st.subheader('Research area co-occurrence network analysis')
+st.subheader('Scale-free & small world network')
+
+
+
+
+
+
+
+
+
+
+
+
