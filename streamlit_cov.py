@@ -13,6 +13,8 @@ import networkx as nx
 import base64
 import requests
 import xlrd
+from matplotlib.dates import DateFormatter
+
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
 st.write('For full analysis, refer to my repo https://github.com/schneeboat/ana_2020')
@@ -223,7 +225,7 @@ author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
 author_per_ppr_df = author_per_ppr.value_counts().rename_axis('Number of Authors').reset_index(name='Count').sort_values('Number of Authors')
 
 fig8, ax8 = plt.subplots(figsize=(12,6))
-ax8.bar(author_per_ppr_df['Number of Authors'],author_per_ppr_df['Count'], color='thistle')
+ax8.bar(author_per_ppr_df['Number of Authors'].astype('category'),author_per_ppr_df['Count'], color='thistle')
 plt.xlabel('Number of Authors',fontsize=15)
 plt.ylabel('Frequency',fontsize=15)
 plt.xticks(fontsize=15)
@@ -234,7 +236,7 @@ st.pyplot(fig8)
 st.write('')
 
 
-
+from matplotlib import dates, pyplot
 
 #int colab+mulridis
 int_colab = data_w_date[['PD','C1']].dropna().copy()
@@ -256,8 +258,8 @@ ra_sm_counts = ra_sm.groupby('PD')['cnt'].value_counts().rename_axis(['date','ra
 ra_sm_counts['percentage_multi_disp']=ra_sm_counts[2]/(ra_sm_counts[1]+ra_sm_counts[2])
 with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
     fig13, ax13 = plt.subplots(figsize=(12,6))
-    ax13.plot(int_colab_counts['date'], int_colab_counts['percentage_inter_colab'], label='International collab', color='springgreen')
-    ax13.plot(ra_sm_counts['date'], ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', color='salmon')
+    ax13.plot_date(dates.date2num(int_colab_counts['date']), int_colab_counts['percentage_inter_colab'], label='International collab', color='springgreen',ls='-')
+    ax13.plot_date(dates.date2num(ra_sm_counts['date']), ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', color='salmon',ls='-')
     plt.xlabel('Date',fontsize=15)
     plt.ylabel('Ratio',fontsize=15)
     plt.xticks(fontsize=15)
@@ -266,10 +268,16 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     plt.tight_layout()
     st.pyplot(fig13)
 st.write('')
+
+
+
+
 #by month
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
+
+dates9 = dates.date2num(date_count.Date)
 fig9, ax9 = plt.subplots(figsize=(12,6))
-ax9.plot(date_count.Date, date_count.Count,color='darksalmon', marker='o')
+ax9.plot_date(dates9, date_count.Count,color='darksalmon', ls='-')
 plt.xlabel('Date',fontsize=15)
 plt.ylabel('Number of Publications',fontsize=15)
 plt.xticks(fontsize=15)
@@ -277,6 +285,8 @@ plt.yticks(fontsize=15)
 plt.title('Number of Publications over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig9)
+
+import seaborn as sns
 
 #country/month
 country_month = data_w_date[['C1', 'PD']].dropna().copy()
@@ -288,14 +298,26 @@ country_month_all = country_month.explode('replace').drop(columns=['C1','country
 country_month_all['num']=1
 country_month_10 = country_month_all[country_month_all['replace'].isin(data_country_10['Countries'].to_list())].groupby(['PD','replace']).count().reset_index()
 country_month_10['replace'] = country_month_10['replace'].astype('category')
-fig10, ax10 = plt.subplots(figsize=(12,6))
-country_month_10.groupby('replace').plot(x='PD', y='num', ax=ax10)
-ax10.legend(data_country_10.Countries.astype('category').to_list())
-plt.xlabel('Date',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Top 10 Countries over Months', fontsize=19)
+
+#fig10, ax10 = plt.subplots(figsize=(12,6))
+
+#ax10.plot_date(dates.date2num(country_month_10['PD']), country_month_10['num'])
+##ax10.legend(data_country_10.Countries.astype('category').to_list())
+##plt.xlabel('Date',fontsize=15)
+##plt.ylabel('Number of Publications',fontsize=15)
+##plt.xticks(fontsize=15)
+##plt.yticks(fontsize=15)
+##plt.title('Top 10 Countries over Months', fontsize=19)
+##plt.tight_layout()
+fig10 = plt.figure(figsize=(11,5))
+sns.lineplot(x=country_month_10['PD'], y=country_month_10['num'], hue=country_month_10['replace'],
+            hue_order=data_country_10.Countries.to_list(),
+            palette='Set2')
+plt.xlabel('Date',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11)
+plt.yticks(fontsize=11)
+plt.title('Top 10 Countries over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig10)
 st.write('')
@@ -303,16 +325,17 @@ st.write('')
 pub_month = data_w_date[['JI', 'PD']].dropna().copy()
 pub_month['Number']=1
 pub_month_count_10 = pub_month[pub_month['JI'].isin(data_source['Title'].to_list())].groupby(['PD','JI']).count().reset_index()
-pub_month['JI'] = pub_month['JI'].astype('category')
-fig11, ax11 = plt.subplots(figsize=(12,6))
-pub_month_count_10.groupby('JI').plot(x='PD',y='Number', ax=ax11)
-ax11.legend(pub_month_count_10['JI'])
+pub_month_count_10['JI'] = pub_month_count_10['JI'].astype('category')
 
-plt.xlabel('Date',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Top 10 Publishers over Months', fontsize=19)
+fig11=plt.figure(figsize=(11,5))
+sns.lineplot(x=pub_month_count_10['PD'], y=pub_month_count_10['Number'], hue=pub_month_count_10['JI'],
+            hue_order=data_source['Title'].to_list(),
+            palette='Set2')
+plt.xlabel('Date',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11)
+plt.yticks(fontsize=11)
+plt.title('Top 10 Publishers over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig11)
 st.write('')
@@ -323,14 +346,16 @@ research_month_all = research_month.explode('SC')
 research_month_all['num']=1
 research_month_10 = research_month_all[research_month_all.SC.isin(data_research_all['ResArea'].to_list())].groupby(['PD','SC']).count().reset_index()
 research_month_10['SC'] = research_month_10['SC'].astype('category')
-fig12, ax12 = plt.subplots(figsize=(12,6))
-research_month_10.groupby('SC').plot(x='PD', y='num', ax=ax12)
-ax12.legend(data_research_all['ResArea'].to_list())
-plt.xlabel('Date',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Top 10 Research Areas over Months', fontsize=19)
+fig12=plt.figure(figsize=(11,5))
+sns.lineplot(x=research_month_10['PD'], y=research_month_10['num'], 
+             hue=research_month_10['SC'],
+            hue_order=data_research_all['ResArea'].to_list(),
+            palette='Set2')
+plt.xlabel('Date',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11)
+plt.yticks(fontsize=11)
+plt.title('Top 10 Research Areas over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig12)
 st.write('')
