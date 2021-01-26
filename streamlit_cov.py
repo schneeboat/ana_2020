@@ -61,7 +61,7 @@ plt.xticks(fontsize=11)
 plt.yticks(fontsize=11)
 for p in g.patches:
              g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='black',xytext=(0, 5), textcoords='offset points')
 plt.title('Number of Publications by Language', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig2)
@@ -78,7 +78,7 @@ plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
 plt.yticks(fontsize=11)
 for p in g.patches:
              g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='black',xytext=(0, 5), textcoords='offset points')
 plt.title('Number of Publications by Source', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig3)
@@ -111,7 +111,7 @@ plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
 plt.yticks(fontsize=11)
 for p in g.patches:
              g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='black',xytext=(0, 5), textcoords='offset points')
 
 plt.title('Number of Publications by Institution', fontsize=15)
 plt.tight_layout()
@@ -155,7 +155,7 @@ plt.xticks(fontsize=11, rotation = -45)
 plt.yticks(fontsize=11)
 for p in g.patches:
              g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='black',xytext=(0, 5), textcoords='offset points')
 
 plt.title('Number of Publications by Countries', fontsize=15)
 plt.tight_layout()
@@ -175,7 +175,7 @@ plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
 plt.yticks(fontsize=11)
 for p in g.patches:
              g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+             ha='center', va='center', fontsize=11, color='black',xytext=(0, 5), textcoords='offset points')
 
 plt.title('Number of Publications by Research Area', fontsize=15)
 plt.tight_layout()
@@ -255,8 +255,8 @@ ra_sm_counts = ra_sm.groupby('PD')['cnt'].value_counts().rename_axis(['date','ra
 ra_sm_counts['percentage_multi_disp']=ra_sm_counts[2]/(ra_sm_counts[1]+ra_sm_counts[2])
 with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
     fig13= plt.figure(figsize=(11,5))
-    sns.lineplot(x=int_colab_counts['date'], y=int_colab_counts['percentage_inter_colab'], label='International collab', hue = 'springgreen')
-    sns.lineplot(x=ra_sm_counts['date'], y=ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', hue = 'salmon')
+    sns.lineplot(x=int_colab_counts['date'], y=int_colab_counts['percentage_inter_colab'], label='International collab', color = 'springgreen')
+    sns.lineplot(x=ra_sm_counts['date'], y=ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', color = 'salmon')
     plt.xlabel('Date',fontsize=12)
     plt.ylabel('Ratio',fontsize=12)
     plt.xticks(fontsize=11)
