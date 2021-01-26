@@ -407,7 +407,7 @@ st.write('')
 
 st.subheader('Wordcloud visualization')
 st.write('Whole year:')
-st.image('https://github.com/schneeboat/ana_2020/blob/main/cloud_all.jpg')
+st.image('./cloud_all.jpg')
 
 
 
