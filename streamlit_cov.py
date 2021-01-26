@@ -33,7 +33,7 @@ st.write('At the beginning, a few descriptive visualizations will be shown, then
 st.subheader('Descriptive data analysis')
 
 url= 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
-data = pd.DataFrame(url, engine='openpyxl')
+data = pd.read_excel(url, engine='openpyxl')
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
 data_w_date = data[data.PD.isin(mon)].copy()
