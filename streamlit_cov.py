@@ -32,7 +32,7 @@ st.write('...')
 st.write('At the beginning, a few descriptive visualizations will be shown, then there will be wordcloud visualizations, lastly, analysis of 4 major networks from the data will be shown.')
 st.subheader('Descriptive data analysis')
 
-url= 'https://github.com/schneeboat/ana_2020/blob/main/data.xlsx'
+url= 'raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
 wb_obj = openpyxl.load_workbook(url)
 sheet_obj = wb_obj.active
 
