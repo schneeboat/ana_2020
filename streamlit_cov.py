@@ -6,13 +6,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import re
 from datetime import datetime
-import nltk
-import networkx as nx
+
 
 
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
-st.write('For full analysis, refer to my repo https://github.com/schneeboat/ana_2020')
+st.write('This page only contains selective results. For full analysis, refer to my repo https://github.com/schneeboat/ana_2020')
 st.write('Since python library wordcloud has some build error for macOS which hasn\'t been resolved for so long, pictures of generated wordcloud from colab will be pasted.')
 st.write('Given the long running time for building networks and calculating centrality measures, only calculated results will be pasted from colab.')
 st.subheader('Introduction')
@@ -409,24 +408,39 @@ st.subheader('Wordcloud visualization')
 st.write('Whole year:')
 st.image('./cloud_all.jpg')
 
-
-
-
-
 st.header('Network analysis')
+
+nw_au = 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/co_author.xlsx'
+nw_country = 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/co_country.xlsx'
+nw_institution = 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/co_institutions.xlsx'
+nw_ra = 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/co_occur_ra.xlsx'
+
+
+author_co = pd.read_excel(nw_au)
+country_co = pd.read_excel(nw_country)
+inst_co = pd.read_excel(nw_institution)
+ra_co = pd.read_excel(nw_ra)
+
 
 st.subheader('Co-authorship network analysis')
 st.write('A co-authorship network is a complex network where each node represents an author, two nodes are connected by a link if there is one collaboration between them.')
+st.write('Author pairs that have the most frequent collaborations:')
+st.write(author_co.head(10))
 
 st.subheader('Institution-level collaboration network analysis')
 st.write('A institution-level collaboration network is a network where each node represents an institution. There is a link between two nodes if there is one publication collaborated by two institutions.')
+st.write('Institution pairs that have the most frequent collaborations:')
+st.write(inst_co.head(10))
 
 st.subheader('Country-level collaboration network analyis')
 st.write('A country-level collaboration network is a complex network where each node represents a country, two nodes are connected by a link if there is a collaboration between two institutions that belong to those two countries.')
+st.write('Country (where the specific institution belongs to) pairs that have the most frequent collaborations:')
+st.write(country_co.head(10))
 
 st.subheader('Research area co-occurrence network analysis')
 st.write('A research area co-occurrence network is a network where each node represents a research area, and two nodes are connected by a link if two research areas appear together in one paper. ')
-
+st.write('Research area pairs that appear together most frequently:')
+st.write(ra_co.head(10))
 
 
 st.subheader('Scale-free & small-world property of co-authorship network')
