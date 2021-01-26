@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -21,7 +19,7 @@ st.write('For full analysis, refer to my repo https://github.com/schneeboat/ana_
 st.write('Since python library wordcloud has some build error for macOS which hasn\'t been resolved for so long, pictures of generated wordcloud from colab will be pasted.')
 st.write('Given the long running time for building networks and calculating centrality measures, only calculated results will be pasted from colab.')
 st.subheader('Introduction')
-st.write('The main purpose of this analysis is to identify the research trend, collaboration pattern, most influential elements, etc. from publications related to covid-19 in 2020. All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From all data sources, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. XXXXXXX records were downloaded. Data retrieving date: XXXXXX.')
+st.write('The main purpose of this analysis is to identify the research trend, collaboration pattern, most influential elements, etc. from publications related to covid-19 in 2020. All the data used for analysis were retrieved from Web of Science(WoS), a database that provides comprehensive citation data for many different academic disciplines. From WoS core collection, topic keywords: covid OR coronavirus OR covid-19 OR covid19 OR 2019-nCoV OR SARS-CoV-2 were selected, with time span ranging from 2020 to 2020. 80,050 records were downloaded. Data retrieving date: 26 Jan, 2021.')
 st.write('Since the outbreak of covid-19, there has been many researchers studying this new type of virus that claims many lives in the world. As a result, many scientific publications have been published. Here, we only focus on the scientific publications that were published in 2020. We want to answer the following questions:')
 st.write('1. What are the most popular research areas? What does the quantitative output look like?')
 st.write('2. What are the most cited papers? And what are the corresponding research areas?')
@@ -34,15 +32,15 @@ st.write('...')
 st.write('At the beginning, a few descriptive visualizations will be shown, then there will be wordcloud visualizations, lastly, analysis of 4 major networks from the data will be shown.')
 st.subheader('Descriptive data analysis')
 
-
-url= 'https://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xls'
+url= 'https://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
 data = pd.read_excel(url, usecols=range(1,30))
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
 data_w_date = data[data.PD.isin(mon)].copy()
 data_w_date.PD = data_w_date.PD.apply(lambda x: datetime.strptime(x,'%b').strftime('2020-%m'))
+
 #doc type
-data_doc = data.PT.dropna().str.split(';').apply(lambda x: x[0]).value_counts().rename_axis('DocType').reset_index(name='Count')
+data_doc = data.DT.dropna().str.split(';').apply(lambda x: x[0]).value_counts().rename_axis('DocType').reset_index(name='Count')
 
 with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
     fig1, ax1 = plt.subplots()
@@ -54,8 +52,8 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     plt.tight_layout()
     st.pyplot(fig1)
 st.write('')
-#language
 
+#language
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
 
 fig2, ax2 = plt.subplots(figsize=(12,6))
@@ -88,6 +86,7 @@ plt.title('Number of Publications by Source', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig3)
 st.write('')
+
 #pagecount
 data_page = data.PG.dropna().copy()
 
@@ -101,11 +100,11 @@ plt.title('Number of Pages per Publication', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig4)
 st.write('')
+
 #institution
 data_inst = data[['C1']].dropna().copy()
 data_inst.C1= data_inst.C1.apply(lambda x: re.findall(r"\] (.*?)\,", x))
 data_inst_all = data_inst.explode('C1').C1.value_counts().rename_axis('Institutions').reset_index(name='Count')[0:10]
-
 
 fig5, ax5 = plt.subplots(figsize=(16,9))
 ax5.bar(data_inst_all.Institutions, data_inst_all.Count, color='thistle')
@@ -116,15 +115,14 @@ plt.yticks(fontsize=15)
 for p in ax5.patches:
              ax5.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
              ha='center', va='center', fontsize=11, color='thistle',xytext=(0, 5), textcoords='offset points')
-
 plt.title('Number of Publications by Institution', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig5)
 st.write('')
+
 #country
 data_country = data[['C1']].dropna().copy()
 data_country.C1 = data_country.C1.apply(lambda x: re.sub(r"\[(.*?)\] ", "", x).split('; ')).to_list()
-
 data_country['country']=[list(set(i)) for i in [[j.split(', ')[-1] for j in i] for i in data_country.C1]] 
 
 def replace(string):
@@ -151,7 +149,6 @@ data_country['replace'] = [list(set(i)) for i in data_country['replace_1']]
 data_country_all = data_country.explode('replace')['replace'].value_counts().rename_axis('Countries').reset_index(name='Count')
 data_country_10 = data_country_all[0:10]
 
-
 fig6, ax6 = plt.subplots(figsize=(15,8))
 ax6.bar(data_country_10.Countries, data_country_10.Count, color='thistle')
 plt.xlabel('Countries',fontsize=15)
@@ -161,11 +158,11 @@ plt.yticks(fontsize=15)
 for p in ax6.patches:
              ax6.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
              ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
-
 plt.title('Number of Publications by Countries', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig6)
 st.write('')
+
 #ra
 data_research = data[['SC']].dropna().copy()
 data_research.SC = data_research.SC.str.split('; ')
@@ -185,12 +182,14 @@ plt.title('Number of Publications by Research Area', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig7)
 st.write('')
+
 #kw
 data_keywords=data[['DE']].dropna().copy()
 data_keywords.DE = data_keywords.DE.str.split('; ')
 data_keywords_full = data_keywords.explode('DE').DE.str.lower().value_counts().rename_axis('Author Keywords').reset_index(name='Count')
 st.dataframe(data_keywords_full.head(10))
 st.write('')
+
 #author tb
 data_author = data[['AF']].dropna().copy()
 data_author = data_author.loc[data_author.AF != '[Anonymous]'].copy()
@@ -219,6 +218,7 @@ mcp = data[['TI', 'SC', 'Z9']].dropna().copy().sort_values('Z9', ascending=False
 mcp = mcp.rename(columns={'TI':'Document title','SC': 'Research area', 'Z9': 'Total number cited'})
 st.dataframe(mcp.head(10))
 st.write('')
+
 #num author/ppr
 data_author_wo_anony = data_author.loc[data_author.AF != '[Anonymous]'].copy()
 author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
@@ -236,8 +236,7 @@ st.pyplot(fig8)
 st.write('')
 
 
-from matplotlib import dates, pyplot
-
+from matplotlib import dates
 #int colab+mulridis
 int_colab = data_w_date[['PD','C1']].dropna().copy()
 int_colab['C1'] = int_colab['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
@@ -269,9 +268,6 @@ with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colo
     st.pyplot(fig13)
 st.write('')
 
-
-
-
 #by month
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
 
@@ -286,8 +282,6 @@ plt.title('Number of Publications over Months', fontsize=19)
 plt.tight_layout()
 st.pyplot(fig9)
 
-import seaborn as sns
-
 #country/month
 country_month = data_w_date[['C1', 'PD']].dropna().copy()
 country_month.C1 = country_month.C1.apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
@@ -299,16 +293,6 @@ country_month_all['num']=1
 country_month_10 = country_month_all[country_month_all['replace'].isin(data_country_10['Countries'].to_list())].groupby(['PD','replace']).count().reset_index()
 country_month_10['replace'] = country_month_10['replace'].astype('category')
 
-#fig10, ax10 = plt.subplots(figsize=(12,6))
-
-#ax10.plot_date(dates.date2num(country_month_10['PD']), country_month_10['num'])
-##ax10.legend(data_country_10.Countries.astype('category').to_list())
-##plt.xlabel('Date',fontsize=15)
-##plt.ylabel('Number of Publications',fontsize=15)
-##plt.xticks(fontsize=15)
-##plt.yticks(fontsize=15)
-##plt.title('Top 10 Countries over Months', fontsize=19)
-##plt.tight_layout()
 fig10 = plt.figure(figsize=(11,5))
 sns.lineplot(x=country_month_10['PD'], y=country_month_10['num'], hue=country_month_10['replace'],
             hue_order=data_country_10.Countries.to_list(),
@@ -321,6 +305,7 @@ plt.title('Top 10 Countries over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig10)
 st.write('')
+
 #source/mon
 pub_month = data_w_date[['JI', 'PD']].dropna().copy()
 pub_month['Number']=1
@@ -339,6 +324,7 @@ plt.title('Top 10 Publishers over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig11)
 st.write('')
+
 #ra/mon
 research_month = data_w_date[['SC','PD']].dropna().copy()
 research_month['SC'] = research_month['SC'].str.split('; ')
@@ -360,9 +346,8 @@ plt.tight_layout()
 st.pyplot(fig12)
 st.write('')
 
-
-
 st.subheader('Correlation matrix')
+
 #corr
 corr_ana = data[['AF', 'NR', 'Z9', 'PG', 'SC', 'C1']].dropna().copy()
 corr_ana['Number of Authors']=corr_ana['AF'].str.split(';').apply(lambda x: len(x))
@@ -396,6 +381,7 @@ st.pyplot(f)
 st.write('')
 
 st.write('h-index and g-index are author-level metrics to measure both the productivity and citation impact of publications of an author. The higher the number, the greater the impact.')
+
 #h g
 def h_index(li):
     li_sorted=sorted(li, reverse=True)
@@ -423,14 +409,40 @@ st.dataframe(g_index_top10.head(10))
 st.write('')
 
 st.subheader('Wordcloud visualization')
+st.write('Whole year:')
+st.image('./header.png')
+
+st.write('Jan-Apr')
+st.image('./header.png')
+st.write('May-Aug')
+st.image('./header.png')
+st.write('Sep-Dec')
+st.image('./header.png')
+
+
+
+
+st.header('Network analysis')
+
 st.subheader('Co-authorship network analysis')
+st.write('A co-authorship network is a complex network where each node represents an author, two nodes are connected by a link if there is one collaboration between them.')
+
 st.subheader('Institution-level collaboration network analysis')
+st.write('A institution-level collaboration network is a network where each node represents an institution. There is a link between two nodes if there is one publication collaborated by two institutions.')
+
 st.subheader('Country-level collaboration network analyis')
+st.write('A country-level collaboration network is a complex network where each node represents a country, two nodes are connected by a link if there is a collaboration between two institutions that belong to those two countries.')
+
 st.subheader('Research area co-occurrence network analysis')
-st.subheader('Scale-free & small world network')
+st.write('A research area co-occurrence network is a network where each node represents a research area, and two nodes are connected by a link if two research areas appear together in one paper. ')
 
 
 
+st.subheader('Scale-free & small-world property of co-authorship network')
+st.write('A scale-free network is a network whose degree distribution follows a power law, at least asymptotically.')
+st.write('A small-world network is defined to be a network where the typical distance L (shortest length path) between two randomly chosen nodes (the number of steps required) grows proportionally to the logarithm of the number of nodes N in the network.')
+st.write('To verify the scale-free property of the co-authorship network, powerlaw library is imported to measure the distribution of degree sequence and the frequency of appearing. And it asymptotically follows power law distribution and it is indeed a scale-free network.')
+st.write('To further verify the small-world property, it\'s enough to consider the largest component of the network. Two measures should be calculated: average shortest path length and natural logrithm of the number of nodes. And they are: , . Since they are of the same order of magnitude, it suggests that the network has small-world property.')
 
 
 
