@@ -222,17 +222,6 @@ data_author_wo_anony = data_author.loc[data_author.AF != '[Anonymous]'].copy()
 author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
 author_per_ppr_df = author_per_ppr.value_counts().rename_axis('Number of Authors').reset_index(name='Count').sort_values('Number of Authors')
 
-fig8, ax8 = plt.subplots(figsize=(12,6))
-ax8.bar(author_per_ppr_df['Number of Authors'],author_per_ppr_df['Count'], color='thistle')
-plt.xlabel('Number of Authors',fontsize=15)
-plt.ylabel('Frequency',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Number of Authors per Publication', fontsize=19)
-plt.tight_layout()
-st.pyplot(fig8)
-st.write('')
-
 
 #int colab+mulridis
 int_colab = data_w_date[['PD','C1']].dropna().copy()
@@ -425,29 +414,29 @@ ra_co = pd.read_excel(nw_ra)
 st.subheader('Co-authorship network analysis')
 st.write('A co-authorship network is a complex network where each node represents an author, two nodes are connected by a link if there is one collaboration between them.')
 st.write('Author pairs that have the most frequent collaborations:')
-st.write(author_co.head(10))
+st.write(author_co.drop(columns=['Unnamed: 0']).head(10))
 
 st.subheader('Institution-level collaboration network analysis')
 st.write('A institution-level collaboration network is a network where each node represents an institution. There is a link between two nodes if there is one publication collaborated by two institutions.')
 st.write('Institution pairs that have the most frequent collaborations:')
-st.write(inst_co.head(10))
+st.write(inst_co.drop(columns=['Unnamed: 0']).head(10))
 
 st.subheader('Country-level collaboration network analyis')
 st.write('A country-level collaboration network is a complex network where each node represents a country, two nodes are connected by a link if there is a collaboration between two institutions that belong to those two countries.')
 st.write('Country (where the specific institution belongs to) pairs that have the most frequent collaborations:')
-st.write(country_co.head(10))
+st.write(country_co.drop(columns=['Unnamed: 0']).head(10))
 
 st.subheader('Research area co-occurrence network analysis')
 st.write('A research area co-occurrence network is a network where each node represents a research area, and two nodes are connected by a link if two research areas appear together in one paper. ')
 st.write('Research area pairs that appear together most frequently:')
-st.write(ra_co.head(10))
+st.write(ra_co.drop(columns=['Unnamed: 0']).head(10))
 
 
 st.subheader('Scale-free & small-world property of co-authorship network')
 st.write('A scale-free network is a network whose degree distribution follows a power law, at least asymptotically.')
 st.write('A small-world network is defined to be a network where the typical distance L (shortest length path) between two randomly chosen nodes (the number of steps required) grows proportionally to the logarithm of the number of nodes N in the network.')
 st.write('To verify the scale-free property of the co-authorship network, powerlaw library is imported to measure the distribution of degree sequence and the frequency of appearing. And it asymptotically follows power law distribution and it is indeed a scale-free network.')
-st.write('To further verify the small-world property, it\'s enough to consider the largest component of the network. Two measures should be calculated: average shortest path length and natural logrithm of the number of nodes. And they are: , . Since they are of the same order of magnitude, it suggests that the network has small-world property.')
+st.write('To further verify the small-world property, it\'s enough to consider the largest component of the network. Two measures should be calculated: average shortest path length and natural logrithm of the number of nodes. Since they are of the same order of magnitude, it suggests that the network has small-world property.')
 
 
 
