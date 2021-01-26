@@ -8,10 +8,7 @@ import re
 from datetime import datetime
 import nltk
 import networkx as nx
-import base64
-import requests
-import xlrd
-from matplotlib.dates import DateFormatter
+
 
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
@@ -56,16 +53,16 @@ st.write('')
 #language
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
 
-fig2, ax2 = plt.subplots(figsize=(12,6))
-ax2.bar(data_lang.Language, data_lang.Count, color='thistle')
-for p in ax2.patches:
-         ax2.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-         ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
-plt.xlabel('Language',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Number of Publications by Language', fontsize=19)
+fig2 = plt.figure(figsize=(11,5))
+sns.barplot(x=data_lang.Language, y=data_lang.Count, color='slategrey')
+plt.xlabel('Language',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11)
+plt.yticks(fontsize=11)
+for p in g.patches:
+             g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
+             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+plt.title('Number of Publications by Language', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig2)
 st.write('')
@@ -73,16 +70,16 @@ st.write('')
 #source
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
 data_source['Title'] = data_source.Title.astype('category')
-fig3, ax3 = plt.subplots(figsize=(12,7.5))
-ax3.bar(data_source.Title, data_source.Count, color='thistle')
-plt.xlabel('Source',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
-plt.yticks(fontsize=15)
-for p in ax3.patches:
-             ax3.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
+fig3 = plt.figure(figsize=(12,6))
+g=sns.barplot(x=data_source.Title, y=data_source.Count, color='slategrey')
+plt.xlabel('Source',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
+plt.yticks(fontsize=11)
+for p in g.patches:
+             g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
              ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
-plt.title('Number of Publications by Source', fontsize=19)
+plt.title('Number of Publications by Source', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig3)
 st.write('')
@@ -106,16 +103,17 @@ data_inst = data[['C1']].dropna().copy()
 data_inst.C1= data_inst.C1.apply(lambda x: re.findall(r"\] (.*?)\,", x))
 data_inst_all = data_inst.explode('C1').C1.value_counts().rename_axis('Institutions').reset_index(name='Count')[0:10]
 
-fig5, ax5 = plt.subplots(figsize=(16,9))
-ax5.bar(data_inst_all.Institutions, data_inst_all.Count, color='thistle')
-plt.xlabel('Institutions',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
-plt.yticks(fontsize=15)
-for p in ax5.patches:
-             ax5.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
-             ha='center', va='center', fontsize=11, color='thistle',xytext=(0, 5), textcoords='offset points')
-plt.title('Number of Publications by Institution', fontsize=19)
+fig5 = plt.figure(figsize=(11.5,6.5))
+g=sns.barplot(x=data_inst_all.Institutions, y=data_inst_all.Count, color='slategrey')
+plt.xlabel('Institutions',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
+plt.yticks(fontsize=11)
+for p in g.patches:
+             g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
+             ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
+
+plt.title('Number of Publications by Institution', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig5)
 st.write('')
@@ -149,16 +147,17 @@ data_country['replace'] = [list(set(i)) for i in data_country['replace_1']]
 data_country_all = data_country.explode('replace')['replace'].value_counts().rename_axis('Countries').reset_index(name='Count')
 data_country_10 = data_country_all[0:10]
 
-fig6, ax6 = plt.subplots(figsize=(15,8))
-ax6.bar(data_country_10.Countries, data_country_10.Count, color='thistle')
-plt.xlabel('Countries',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15, rotation = -45)
-plt.yticks(fontsize=15)
-for p in ax6.patches:
-             ax6.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
+fig6 = plt.figure(figsize=(11.5,5.5))
+g=sns.barplot(x=data_country_10.Countries, y=data_country_10.Count, color='slategrey')
+plt.xlabel('Countries',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11, rotation = -45)
+plt.yticks(fontsize=11)
+for p in g.patches:
+             g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
              ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
-plt.title('Number of Publications by Countries', fontsize=19)
+
+plt.title('Number of Publications by Countries', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig6)
 st.write('')
@@ -168,17 +167,17 @@ data_research = data[['SC']].dropna().copy()
 data_research.SC = data_research.SC.str.split('; ')
 data_research_all = data_research.explode('SC').SC.value_counts().rename_axis('ResArea').reset_index(name='Count')[:10]
 
-fig7, ax7 = plt.subplots(figsize=(17,10))
-ax7.bar(data_research_all.ResArea, data_research_all.Count, color='thistle')
-plt.xlabel('Research Area',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15, rotation = -45, ha='left', rotation_mode='anchor')
-plt.yticks(fontsize=15)
-for p in ax7.patches:
-             ax7.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
+fig7 = plt.figure(figsize=(12,7))
+g=sns.barplot(x=data_research_all.ResArea, y=data_research_all.Count, color='slategrey')
+plt.xlabel('Research Area',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
+plt.yticks(fontsize=11)
+for p in g.patches:
+             g.annotate("%1.0f" % p.get_height(), (p.get_x() + p.get_width() / 2., p.get_height()),
              ha='center', va='center', fontsize=11, color='slategrey',xytext=(0, 5), textcoords='offset points')
 
-plt.title('Number of Publications by Research Area', fontsize=19)
+plt.title('Number of Publications by Research Area', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig7)
 st.write('')
@@ -236,7 +235,6 @@ st.pyplot(fig8)
 st.write('')
 
 
-from matplotlib import dates
 #int colab+mulridis
 int_colab = data_w_date[['PD','C1']].dropna().copy()
 int_colab['C1'] = int_colab['C1'].apply(lambda x: re.sub(r"\[(.*?)\]", "", x).split('; ')).to_list()
@@ -256,13 +254,13 @@ ra_sm.loc[ra_sm['cnt']>1, 'cnt'] = 2
 ra_sm_counts = ra_sm.groupby('PD')['cnt'].value_counts().rename_axis(['date','ra']).reset_index(name='Count').pivot(index='date', columns='ra', values='Count').fillna(0).reset_index()
 ra_sm_counts['percentage_multi_disp']=ra_sm_counts[2]/(ra_sm_counts[1]+ra_sm_counts[2])
 with plt.style.context({'axes.prop_cycle' : plt.cycler('color', plt.cm.Set3.colors)}):
-    fig13, ax13 = plt.subplots(figsize=(12,6))
-    ax13.plot_date(dates.date2num(int_colab_counts['date']), int_colab_counts['percentage_inter_colab'], label='International collab', color='springgreen',ls='-')
-    ax13.plot_date(dates.date2num(ra_sm_counts['date']), ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', color='salmon',ls='-')
-    plt.xlabel('Date',fontsize=15)
-    plt.ylabel('Ratio',fontsize=15)
-    plt.xticks(fontsize=15)
-    plt.yticks(fontsize=15)
+    fig13= plt.figure(figsize=(11,5))
+    sns.lineplot(x=int_colab_counts['date'], y=int_colab_counts['percentage_inter_colab'], label='International collab', hue = 'springgreen')
+    sns.lineplot(x=ra_sm_counts['date'], y=ra_sm_counts['percentage_multi_disp'], label='Multidisciplinary', hue = 'salmon')
+    plt.xlabel('Date',fontsize=12)
+    plt.ylabel('Ratio',fontsize=12)
+    plt.xticks(fontsize=11)
+    plt.yticks(fontsize=11)
     plt.legend()
     plt.tight_layout()
     st.pyplot(fig13)
@@ -271,14 +269,13 @@ st.write('')
 #by month
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
 
-dates9 = dates.date2num(date_count.Date)
-fig9, ax9 = plt.subplots(figsize=(12,6))
-ax9.plot_date(dates9, date_count.Count,color='darksalmon', ls='-')
-plt.xlabel('Date',fontsize=15)
-plt.ylabel('Number of Publications',fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.title('Number of Publications over Months', fontsize=19)
+fig9 = plt.figure(figsize=(11,5))
+sns.lineplot(x=date_count.Date, y=date_count.Count, color='slategrey', marker='o')
+plt.xlabel('Date',fontsize=12)
+plt.ylabel('Number of Publications',fontsize=12)
+plt.xticks(fontsize=11)
+plt.yticks(fontsize=11)
+plt.title('Number of Publications over Months', fontsize=15)
 plt.tight_layout()
 st.pyplot(fig9)
 
@@ -410,14 +407,8 @@ st.write('')
 
 st.subheader('Wordcloud visualization')
 st.write('Whole year:')
-st.image('./header.png')
+st.image('https://github.com/schneeboat/ana_2020/blob/main/cloud_all.jpg')
 
-st.write('Jan-Apr')
-st.image('./header.png')
-st.write('May-Aug')
-st.image('./header.png')
-st.write('Sep-Dec')
-st.image('./header.png')
 
 
 
