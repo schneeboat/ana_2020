@@ -12,7 +12,7 @@ import base64
 import requests
 import xlrd
 from matplotlib.dates import DateFormatter
-import openpyxl
+
 
 st.title('Bibliographic analysis on covid-19 related publications in 2020 (BETA)')
 st.write('For full analysis, refer to my repo https://github.com/schneeboat/ana_2020')
@@ -32,11 +32,8 @@ st.write('...')
 st.write('At the beginning, a few descriptive visualizations will be shown, then there will be wordcloud visualizations, lastly, analysis of 4 major networks from the data will be shown.')
 st.subheader('Descriptive data analysis')
 
-url= 'raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
-wb_obj = openpyxl.load_workbook(url)
-sheet_obj = wb_obj.active
-
-data = pd.DataFrame(sheet_obj)
+url= 'http://raw.githubusercontent.com/schneeboat/ana_2020/main/data.xlsx'
+data = pd.DataFrame(url, engine='openpyxl')
 mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 data.PD = data.PD.str[:3].str.capitalize()
 data_w_date = data[data.PD.isin(mon)].copy()
