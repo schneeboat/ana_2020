@@ -68,7 +68,7 @@ st.write('')
 
 #source
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
-data_source['Title'] = data_source.Title.astype('category')
+
 fig3 = plt.figure(figsize=(12,6))
 g = sns.barplot(x=data_source.Title, y=data_source.Count, color='thistle')
 plt.xlabel('Source',fontsize=12)
@@ -223,7 +223,7 @@ author_per_ppr = data_author_wo_anony.AF.apply(lambda x: len(x))
 author_per_ppr_df = author_per_ppr.value_counts().rename_axis('Number of Authors').reset_index(name='Count').sort_values('Number of Authors')
 
 fig8, ax8 = plt.subplots(figsize=(12,6))
-ax8.bar(author_per_ppr_df['Number of Authors'].astype('category'),author_per_ppr_df['Count'], color='thistle')
+ax8.bar(author_per_ppr_df['Number of Authors'],author_per_ppr_df['Count'], color='thistle')
 plt.xlabel('Number of Authors',fontsize=15)
 plt.ylabel('Frequency',fontsize=15)
 plt.xticks(fontsize=15)
