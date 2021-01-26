@@ -54,7 +54,7 @@ st.write('')
 data_lang = data.LA.dropna().value_counts().rename_axis('Language').reset_index(name='Count')[0:10]
 
 fig2 = plt.figure(figsize=(11,5))
-sns.barplot(x=data_lang.Language, y=data_lang.Count, color='slategrey')
+g = sns.barplot(x=data_lang.Language, y=data_lang.Count, color='thistle')
 plt.xlabel('Language',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11)
@@ -71,7 +71,7 @@ st.write('')
 data_source = data.JI.dropna().value_counts().rename_axis('Title').reset_index(name='Count')[0:10]
 data_source['Title'] = data_source.Title.astype('category')
 fig3 = plt.figure(figsize=(12,6))
-g=sns.barplot(x=data_source.Title, y=data_source.Count, color='slategrey')
+g = sns.barplot(x=data_source.Title, y=data_source.Count, color='thistle')
 plt.xlabel('Source',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
@@ -104,7 +104,7 @@ data_inst.C1= data_inst.C1.apply(lambda x: re.findall(r"\] (.*?)\,", x))
 data_inst_all = data_inst.explode('C1').C1.value_counts().rename_axis('Institutions').reset_index(name='Count')[0:10]
 
 fig5 = plt.figure(figsize=(11.5,6.5))
-g=sns.barplot(x=data_inst_all.Institutions, y=data_inst_all.Count, color='slategrey')
+g = sns.barplot(x=data_inst_all.Institutions, y=data_inst_all.Count, color='thistle')
 plt.xlabel('Institutions',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
@@ -148,7 +148,7 @@ data_country_all = data_country.explode('replace')['replace'].value_counts().ren
 data_country_10 = data_country_all[0:10]
 
 fig6 = plt.figure(figsize=(11.5,5.5))
-g=sns.barplot(x=data_country_10.Countries, y=data_country_10.Count, color='slategrey')
+g=sns.barplot(x=data_country_10.Countries, y=data_country_10.Count, color='thistle')
 plt.xlabel('Countries',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11, rotation = -45)
@@ -168,7 +168,7 @@ data_research.SC = data_research.SC.str.split('; ')
 data_research_all = data_research.explode('SC').SC.value_counts().rename_axis('ResArea').reset_index(name='Count')[:10]
 
 fig7 = plt.figure(figsize=(12,7))
-g=sns.barplot(x=data_research_all.ResArea, y=data_research_all.Count, color='slategrey')
+g=sns.barplot(x=data_research_all.ResArea, y=data_research_all.Count, color='thistle')
 plt.xlabel('Research Area',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11, rotation = -45, ha='left', rotation_mode='anchor')
@@ -270,7 +270,7 @@ st.write('')
 date_count = data_w_date.sort_values(by = 'PD').groupby('PD').size().rename_axis('Date').reset_index(name='Count')
 
 fig9 = plt.figure(figsize=(11,5))
-sns.lineplot(x=date_count.Date, y=date_count.Count, color='slategrey', marker='o')
+sns.lineplot(x=date_count.Date, y=date_count.Count, color='thistle', marker='o')
 plt.xlabel('Date',fontsize=12)
 plt.ylabel('Number of Publications',fontsize=12)
 plt.xticks(fontsize=11)
