@@ -1,7 +1,0 @@
-streamlit==0.74.1
-matplotlib==3.3.3
-pandas==1.2.0
-numpy==1.19.5
-networkx==2.5
-nltk==3.5
-seaborn==0.11.1
